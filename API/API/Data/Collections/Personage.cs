@@ -1,13 +1,15 @@
 ﻿using System;
 using MongoDB.Driver.GeoJsonObjectModel;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson;
 
 namespace API.Data.Collections
 {
     public class Personage
     {
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string Id { get; set; }
         public string Nome { get; set; }
         public string Sexo { get; set; }
         public DateTime DataNascimento { get; set; }
