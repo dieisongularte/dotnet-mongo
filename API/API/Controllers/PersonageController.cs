@@ -35,5 +35,16 @@ namespace API.Controllers
             var personages = _personagesCollection.Find(Builders<Personage>.Filter.Empty).ToList();
             return Ok(personages);
         }
+
+        [HttpGet("{id:length(24)}", Name = "GetPersonage")]
+        public ActionResult<Personage> ObterPersonage(string id)
+        {
+            var personage = _personagesCollection.Find<Personage>(personage => personage.Id == id).FirstOrDefault();
+            if (personage == null)
+            {
+                return NotFound();
+            }
+            return personage;
+        }
     }
 }
