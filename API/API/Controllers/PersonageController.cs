@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using MongoDB.Driver;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace API.Controllers
 {
@@ -22,14 +23,14 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public ActionResult ObterPersonages()
+        public ActionResult<List<Personage>> Get()
         {
             var personages = _personagesCollection.Find(Builders<Personage>.Filter.Empty).ToList();
             return Ok(personages);
         }
 
         [HttpGet("{id:length(24)}", Name = "GetPersonage")]
-        public ActionResult<Personage> ObterPersonage(string id)
+        public ActionResult<Personage> Get(string id)
         {
             var personage = _personagesCollection.Find<Personage>(personage => personage.Id == id).FirstOrDefault();
             if (personage == null)
@@ -40,7 +41,7 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        public ActionResult SalvarPersonage([FromBody] PersonageDto dto)
+        public ActionResult Create([FromBody] PersonageDto dto)
         {
             var personage = new Personage(dto.Nome, dto.Sexo, dto.DataNascimento, dto.Latitude, dto.Longitude);
             _personagesCollection.InsertOne(personage);
@@ -58,6 +59,18 @@ namespace API.Controllers
             var personage = new Personage(personageIn.Nome, personageIn.Sexo, personageIn.DataNascimento, personageIn.Latitude, personageIn.Longitude);
             personage.Id = id;
             _personagesCollection.ReplaceOne(personage => personage.Id == id, personage);
+            return NoContent();
+        }
+
+        [HttpDelete("{id:length(24)}")]
+        public ActionResult Delete(string id)
+        {
+            var personage = _personagesCollection.Find<Personage>(p => p.Id == id).FirstOrDefault();
+            if (personage == null)
+            {
+                return NotFound();
+            }
+            _personagesCollection.DeleteOne(p => p.Id == personage.Id);
             return NoContent();
         }
     }
